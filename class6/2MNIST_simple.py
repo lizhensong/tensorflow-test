@@ -7,7 +7,7 @@ def hidden_layer(input_tensor, weight_1, bias_1, weight_2, bias_2):
     return tf.matmul(layer1, weight_2) + bias_2
 
 
-mnist = input_data.read_data_sets("D:\Python_Work_Space\MNIST\data", one_hot=True)
+mnist = input_data.read_data_sets("D:\Python_Work_Space\learning-data\MNIST\data", one_hot=True)
 
 x = tf.placeholder(tf.float32, [None, 784])
 y_ = tf.placeholder(tf.float32, [None, 10])
