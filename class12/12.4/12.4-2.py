@@ -1,11 +1,8 @@
 import tensorflow as tf
-# gfile模块定义在tensorflow/python/platform/gfile.py
-# 包含GFile、FastGFile和Open三个没有线程锁定的文件I/O包装器类
-from tensorflow.python.platform import gfile
 
 with tf.Session() as sess:
     # 使用FsatGFile类的构造函数返回一个FastGFile类
-    with gfile.FastGFile("/home/jiangziyang/model/model.pb", 'rb') as f:
+    with tf.gfile.GFile("./model/model.pb", 'rb') as f:
         graph_def = tf.GraphDef()
         # 使用FastGFile类的read()函数读取保存的模型文件，并以字符串形式
         # 返回文件的内容，之后通过ParseFromString()函数解析文件的内容

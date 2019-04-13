@@ -1,0 +1,96 @@
+#========================================================================================================
+#模块说明:
+#       tf.summary中包含的主要函数
+#========================================================================================================
+def scalar(name, tensor, collections=None, family=None)
+def image(name, tensor, max_outputs=3, collections=None, family=None)
+def histogram(name, values, collections=None, family=None)
+def audio(name, tensor, sample_rate, max_outputs=3, collections=None,family=None)
+def merge(inputs, collections=None, name=None)
+def merge_all(key=_ops.GraphKeys.SUMMARIES, scope=None)
+def get_summary_description(node_def)
+#========================================================================================================
+tf.summary模块中常用函数的说明：
+#========================================================================================================
+tf.summary.scalar函数的说明
+#函数原型:
+#       def scalar(name, tensor, collections=None, family=None)
+#函数说明：
+#       [1]将【计算图】中的【标量数据】写入TensorFlow中的【日志文件】，以便为将来tensorboard的可视化做准备
+#参数说明：
+#       [1]name  :一个节点的名字
+#       [2]tensor:要可视化的数据、张量
+#主要用途：
+#       一般在画loss曲线和accuary曲线时会用到这个函数。
+#=======================================================================================================
+tf.summary.image函数的说明
+#函数原型:
+#       def image(name, tensor, max_outputs=3, collections=None, family=None)
+#函数说明：
+#       [1]将【计算图】中的【图像数据】写入TensorFlow中的【日志文件】，以便为将来tensorboard的可视化做准备
+#参数说明：
+#       [1]name  :一个节点的名字
+#       [2]tensor:要可视化的图像数据，一个四维的张量，元素类型为uint8或者float32，维度为[batch_size, height,
+#                 width, channels]
+                [1]其中参数channels有三种取值：
+#                       [1]1:那么这个张量被解释为灰度图像
+#                       [2]3:那么这个张量被解释为RGB彩色图像
+#                       [3]4:那么这个张量被解释为RGBA四通道图像
+#               [2]输入给这个函数的所有图像必须规格一致(长，宽，通道，数据类型)，所有的像素值在[0,255]这个范围
+#       [3]max_outputs:输出的图像数量，可以结合下面的示例代码进行理解
+#主要用途：
+#       一般用在神经网络中图像的可视化
+#========================================================================================================
+tf.summary.histogram函数的说明
+#函数原型:
+#       def histogram(name, values, collections=None, family=None)
+#函数说明：
+#       [1]将【计算图】中的【数据的分布/数据直方图】写入TensorFlow中的【日志文件】，以便为将来tensorboard的可视化做准备
+#参数说明：
+#       [1]name  :一个节点的名字
+#       [2]values:要可视化的数据，可以是任意形状和大小的数据
+#主要用途：
+#       一般用来显示训练过程中变量的分布情况
+#========================================================================================================
+tf.summary.merge_all函数的说明
+#函数原型:
+#       def merge_all(key=_ops.GraphKeys.SUMMARIES, scope=None)
+#函数说明：
+#       [1]将之前定义的所有summary整合在一起
+#       [2]和TensorFlow中的其他操作类似，tf.summary.scalar、tf.summary.histogram、tf.summary.image函数也是一个
+#          op，它们在定义的时候，也不会立即执行，需要通过sess.run来明确调用这些函数。因为，在一个程序中定义的写日志操作
+#          比较多，如果一一调用，将会十分麻烦，所以Tensorflow提供了tf.summary.merge_all()函数将所有的summary整理在一
+#          起。在TensorFlow程序执行的时候，只需要运行这一个操作就可以将代码中定义的所有【写日志操作】执行一次，从而将
+#          所有的日志写入【日志文件】。
+#参数说明：
+#       [1]key  : 用于收集summaries的GraphKey，默认的为GraphKeys.SUMMARIES
+#       [2]scope：可选参数
+#========================================================================================================
+5 tf.summary.FileWriter类的说明
+#类定义原型:
+#       class FileWriter(SummaryToEventTransformer)
+#类说明：
+#      [1]将Summary protocol buffers写入磁盘文件
+#      [2]FileWriter类提供了一种用于在给定目录下创建事件文件的机制，并且将summary数据写入硬盘
+#构造函数：
+#        def __init__(self,logdir,graph=None,max_queue=10,flush_secs=120,graph_def=None,filename_suffix=None):
+#参数说明：
+#       [1]self  : 类对象自身
+#       [2]logdir：用于存储【日志文件】的目录
+#       [3]graph : 将要存储的计算图
+#应用示例：
+#       summary_writer = tf.summary.FileWriter(SUMMARY_DIR,sess.graph)：创建一个FileWrite的类对象，并将计算图写入文件
+#========================================================================================================
+tf.summary.add_summary函数的说明
+#函数原型：
+#        def add_summary(self, summary, global_step=None)
+#函数说明:
+#       [1]该函数是tf.summary.FileWriter父类中的成员函数
+#       [2]将一个`Summary` protocol buffer添加到事件文件，写入事件文件
+#参数说明：
+#       [1]self   : 类对象自身
+#       [2]summary：将要写入的summary
+#       [3]graph  : global_step,当前迭代的轮数，需要注意的是，如果没有这个参数，那么scalar的summary将会成为一条直线
+#应用示例：
+#       summary_writer.add_summary(summary,i)
+#========================================================================================================

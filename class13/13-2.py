@@ -4,20 +4,24 @@ from tensorflow.examples.tutorials.mnist import input_data
 max_steps = 1000
 learning_rate = 0.001
 batch_size = 100
-data_dir = "/home/jiangziyang/MNIST_data"
-log_dir = "/home/jiangziyang/log"
+data_dir = "D:\Python_Work_Space\learning-data\MNIST\data"
+log_dir = "./board/log1"
 mnist = input_data.read_data_sets(data_dir, one_hot=True)
 
 
 def variable_summaries(var):
     with tf.name_scope("summaries"):
         # 求解函数传递进来的var参数的平均值，并使用scaler()函数进行汇总
+        # tf.reduce_mean 函数用于计算张量tensor沿着指定的数轴（tensor的某一维度）上的的平均值
+        # 第一个参数input_tensor： 输入的待降维的tensor;
+        # 第二个参数axis： 指定的轴，如果不指定，则计算所有元素的均值;
+        # 第三个参数keep_dims：是否降维度，设置为True，输出的结果保持输入tensor的形状，设置为False，输出结果会降低维度;(默认为False)
+        mean = tf.reduce_mean(var)
         # 函数scalar()原型为scalar(name,tensor,collections)
         # 其中参数name是展示在ＴensorBoard上的标签，tensor就是要汇总的数据
-        mean = tf.reduce_mean(var)
         tf.summary.scalar("mean", mean)
 
-        # 汇总var数据的方差值,并将标签设为stddev
+        # 汇总var数据的标准差值,并将标签设为stddev
         stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
         tf.summary.scalar("stddev", stddev)
 
@@ -37,7 +41,7 @@ def create_layer(input_tensor, input_num, output_num, layer_name, act=tf.nn.relu
     with tf.name_scope(layer_name):
         with tf.name_scope("weights"):
             # 创建权重参数，并调用variable_summaries()方法统计权重参数的最大、最小
-            # 均值、方差等信息
+            # 均值、标准差等信息
             weights = tf.Variable(tf.truncated_normal([input_num, output_num], stddev=0.1))
             variable_summaries(weights)
 
@@ -58,15 +62,19 @@ def create_layer(input_tensor, input_num, output_num, layer_name, act=tf.nn.relu
 
         return activations
 
+
 x = tf.placeholder(tf.float32, [None, 784], name="x-input")
 y_ = tf.placeholder(tf.float32, [None, 10], name="y-input")
 
-hidden_1 = create_layer(x, 784, 500, "layer_1")
-y = create_layer(hidden_1, 500, 10, "layer_y", act=tf.identity)
+hidden_1 = create_layer(x, 784, 500, "layer_0")
+# tf.identity是节点赋值操作，a=b这个是普通赋值，不会生成tensor的节点
+y = create_layer(hidden_1, 500, 10, "layer_1", act=tf.identity)
 
 with tf.name_scope("input_reshape"):
+    # 图片显示输入矩阵为4维。几张，高，宽，通道。
+    # reshape中最多有一个-1意思是可以自动计算。
     image_shaped_input = tf.reshape(x, [-1, 28, 28, 1])
-    tf.summary.image("input", image_shaped_input, 10)
+    tf.summary.image("{}input{}".format(y_, y), image_shaped_input, 10)
 
 # 计算交叉熵损失并汇总为标量数据
 with tf.name_scope("cross_entropy"):
@@ -75,18 +83,19 @@ with tf.name_scope("cross_entropy"):
     tf.summary.scalar("cross_entropy_scalar", cross_entropy)
 
 with tf.name_scope("train"):
-    train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
 
-#计算预测精度并汇总为标量数据
+# 计算预测精度并汇总为标量数据
 with tf.name_scope("accuracy"):
-    correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+    # arg_max 返回最大值的下标，如果下标相同true，反之。
+    correct_prediction = tf.equal(tf.arg_max(y, 1), tf.arg_max(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     tf.summary.scalar("accuracy_scalar", accuracy)
 
 # 使用merge_all()函数直接获取所有汇总操作
 merged = tf.summary.merge_all()
 
-saver=tf.train.Saver()
+saver = tf.train.Saver()
 with tf.Session() as sess:
     tf.global_variables_initializer().run()
 
@@ -109,45 +118,23 @@ with tf.Session() as sess:
         else:
             x_train, y_train = mnist.train.next_batch(batch_size=batch_size)
             if i % 100 == 50:  # Record execution stats
+                # 计算运算时运行时间和内存空间
                 run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
                 run_metadata = tf.RunMetadata()
-                summary, _ = sess.run([merged, train_step], feed_dict={x: x_train, y_: y_train},
+                summary, _ = sess.run([merged, train_op], feed_dict={x: x_train, y_: y_train},
                                       options=run_options, run_metadata=run_metadata)
                 train_writer.add_run_metadata(run_metadata, "step%03d" % i)
                 train_writer.add_summary(summary, i)
 
-                #注意，这里保存模型不是为了后期使用，而是为了可视化降维后的嵌入向量
-                saver.save(sess, log_dir+"/model.ckpt",i)
+                # 注意，这里保存模型不是为了后期使用，而是为了可视化降维后的嵌入向量
+                saver.save(sess, log_dir + "/model.ckpt", i)
 
                 print("Adding run metadata for", i)
             else:
 
-                summary, _ = sess.run([merged, train_step], feed_dict={x: x_train, y_: y_train})
+                summary, _ = sess.run([merged, train_op], feed_dict={x: x_train, y_: y_train})
                 train_writer.add_summary(summary, i)
 
     # 关闭ＦileWriter
     train_writer.close()
     test_writer.close()
-
-'''打印的信息
-Accuracy at step 0,accuracy is: 9.34000015258789%
-Adding run metadata for 50
-Accuracy at step 100,accuracy is: 91.44999980926514%
-Adding run metadata for 150
-Accuracy at step 200,accuracy is: 93.43000054359436%
-Adding run metadata for 250
-Accuracy at step 300,accuracy is: 94.16000247001648%
-Adding run metadata for 350
-Accuracy at step 400,accuracy is: 95.03999948501587%
-Adding run metadata for 450
-Accuracy at step 500,accuracy is: 95.38999795913696%
-Adding run metadata for 550
-Accuracy at step 600,accuracy is: 95.92999815940857%
-Adding run metadata for 650
-Accuracy at step 700,accuracy is: 96.14999890327454%
-Adding run metadata for 750
-Accuracy at step 800,accuracy is: 96.3100016117096%
-Adding run metadata for 850
-Accuracy at step 900,accuracy is: 96.71000242233276%
-Adding run metadata for 950
-'''
