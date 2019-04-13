@@ -36,7 +36,7 @@ def inference(input_tensor):
 # 通过get_data()函数从输入队列中得到训练用的数据，关于TFRecord文件的读取可参考第十一章
 def get_data():
     filename_queue = tf.train.string_input_producer(
-                      ["/home/jiangziyang/TFRecord/MNIST_tfrecords"])
+        ["/home/jiangziyang/TFRecord/MNIST_tfrecords"])
     reader = tf.TFRecordReader()
     _, serialized_example = reader.read(filename_queue)
     features = tf.parse_single_example(

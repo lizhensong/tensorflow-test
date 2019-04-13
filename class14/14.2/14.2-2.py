@@ -1,21 +1,19 @@
-
-
 import tensorflow as tf
 
-#通过device()函数将运算指定到CPU设备上。
+# 通过device()函数将运算指定到CPU设备上。
 with tf.device("/cpu:0"):
     a = tf.Variable(tf.constant([1.0, 2.0], shape=[2]), name="a")
     b = tf.Variable(tf.constant([3.0, 4.0], shape=[2]), name="b")
 
-#通过device()函数将运算指定到第一个GPU设备上。
+# 通过device()函数将运算指定到第一个GPU设备上。
 with tf.device("/gpu:0"):
     result = a + b
 
-#log_device_placement参数可以用来记录运行每一个运算的设备。
+# log_device_placement参数可以用来记录运行每一个运算的设备。
 with tf.Session(config=tf.ConfigProto(log_device_placement=True)) as sess:
-    tf.initialize_all_variables().run()
+    tf.global_variables_initializer().run()
     print(sess.run(result))
-    #输出Tensor("add:0", shape=(2,), dtype=float32)
+    # 输出Tensor("add:0", shape=(2,), dtype=float32)
 '''
 指定运算设备后的log输出：
 Device mapping:

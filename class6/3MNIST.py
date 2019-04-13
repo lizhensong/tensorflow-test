@@ -72,11 +72,11 @@ train_op = tf.group(train_step, averages_op)
 
 # 检查使用了滑动平均值模型的神经网络前向传播结果是否正确。
 # equal()函数原型为equal(x, y, name)，用于判断两个张量的每一维是否相等，如果相等返回True,否则返回False。
-crorent_predicition = tf.equal(tf.argmax(average_y, 1), tf.argmax(y_, 1))
+correct_prediction = tf.equal(tf.argmax(average_y, 1), tf.argmax(y_, 1))
 
 # cast()函数原型为cast(x, DstT, name)。在这里用于将一个bool型的数据转为float32类型
 # 之后会将得到的float32 的数据求一个平均值，这个平均值就是模型在这一组数据上的正确率
-accuracy = tf.reduce_mean(tf.cast(crorent_predicition, tf.float32))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
 with tf.Session() as sess:

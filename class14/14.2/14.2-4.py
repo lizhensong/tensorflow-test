@@ -6,10 +6,10 @@ with tf.device("/gpu:0"):
     b = tf.Variable(tf.constant([3, 4], shape=[2]), name="b")
 result = a + b
 with tf.Session(config=tf.ConfigProto(log_device_placement=True,
-							              allow_soft_placement=True)) as sess:
-    tf.initialize_all_variables().run()
+                                      allow_soft_placement=True)) as sess:
+    tf.global_variables_initializer().run()
     print(sess.run(result))
-	#输出[4  6]
+# 输出[4  6]
 
 '''
 经过llow_soft_placement=True之后，log会输出以下结果：
