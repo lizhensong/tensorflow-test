@@ -23,16 +23,12 @@ cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=
 training_step = tf.Variable(0, trainable=False)
 
 batch_size = 512                # 设置每一轮训练的batch大小
-learning_rate = 0.1             # 学习率
-learning_rate_decay = 0.9     # 学习率的衰减
-decay_steps = mnist.train.num_examples/batch_size  # 定义训练多少轮改变一次学习率
-learning_rate = tf.train.exponential_decay(learning_rate, training_step, decay_steps, learning_rate_decay)
 
 regularizer = tf.contrib.layers.l2_regularizer(0.0001)        # 计算L2正则化损失函数
 regularization = regularizer(weight1)+regularizer(weight2)  # 计算模型的正则化损失
 loss = tf.reduce_mean(cross_entropy)+regularization           # 总损失
 
-train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss, global_step=training_step)
+train_op = tf.train.AdamOptimizer().minimize(loss, global_step=training_step)
 # train_op_all = tf.group(train_op, averages_op)
 
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))

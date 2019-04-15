@@ -80,7 +80,7 @@ tf.summary.scalar("loss", loss)
 tf.summary.scalar("learning_rate", learning_rate)
 tf.summary.scalar("accuracy", accuracy)
 merged = tf.summary.merge_all()
-
+# keep_checkpoint_every_n_hours=数字  每多长时间保存一次
 saver = tf.train.Saver()
 with tf.Session() as sess:
     tf.global_variables_initializer().run()

@@ -7,7 +7,7 @@ b = tf.Variable(tf.constant([3.0, 4.0], shape=[2]), name="b")
 result = a + b
 
 # 定义初始化全部变量的操作
-init_op = tf.initialize_all_variables()
+init_op = tf.global_variables_initializer()
 # 定义Saver类对象用于保存模型
 saver = tf.train.Saver()
 
