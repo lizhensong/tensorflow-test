@@ -1,17 +1,23 @@
 import tensorflow as tf
 
 with tf.Session() as sess:
-    # 使用FsatGFile类的构造函数返回一个FastGFile类
-    with tf.gfile.GFile("./model/model.pb", 'rb') as f:
+    with open('./model.pb', 'rb') as f:
         graph_def = tf.GraphDef()
-        # 使用FastGFile类的read()函数读取保存的模型文件，并以字符串形式
-        # 返回文件的内容，之后通过ParseFromString()函数解析文件的内容
         graph_def.ParseFromString(f.read())
+        tf.import_graph_def(graph_def, name='')  # 导入计算图
+    # graph_def中保存了图结构，可以从中查看具体的节点
+    # train_writer = tf.summary.FileWriter('', graph_def)
+    # train_writer.close()
+    # 使用tensorboard查看节点
+    # 需要先复原变量
+    print(sess.run('b:0'))
+    # 1
 
-    # 使用import_graph_def()函数将graph_def中保存的计算图加载到当前图中
-    # 原型import_graph_def(graph_def,input_map,return_elements,name,op_dict,
-    #                                                     producer_op_list)
-    result = tf.import_graph_def(graph_def, return_elements=["add:0"])
+    # 输入
+    input_x = sess.graph.get_tensor_by_name('x:0')
+    input_y = sess.graph.get_tensor_by_name('y:0')
 
-    print(sess.run(result))
-    # 输出为[array([3.], dtype=float32)]
+    op = sess.graph.get_tensor_by_name('op_to_store:0')
+
+    ret = sess.run(op,  feed_dict={input_x: 5, input_y: 5})
+    print(ret)
