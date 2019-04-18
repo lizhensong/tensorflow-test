@@ -8,7 +8,9 @@ saver = tf.train.import_meta_graph('./board/log1/model.ckpt-29000.meta')
 with tf.Session() as sess:
     saver.restore(sess, tf.train.latest_checkpoint("./board/log1"))
     graph = tf.get_default_graph()
-
+    # 定义Saver类对象用于保存模型，可以准确查看属性定义名和操作名
+    # saver = tf.train.Saver()
+    # saver.export_meta_graph('a', as_text=True)
     x = graph.get_tensor_by_name('x-input:0')
     y_ = graph.get_tensor_by_name('y-input:0')
 

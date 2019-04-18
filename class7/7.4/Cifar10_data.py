@@ -68,6 +68,10 @@ def inputs(data_dir, batch_size, distorted):
     file_queue = tf.train.string_input_producer(filenames)
     read_input = read_cifar10(file_queue)
 
+
+
+
+
     # 使用cast()函数将图片数据转为float32格式，原型cast(x,DstT,name)
     reshaped_image = tf.cast(read_input.uint8image, tf.float32)
     num_examples_per_epoch = num_examples_pre_epoch_for_train
