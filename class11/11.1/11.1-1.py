@@ -25,9 +25,9 @@ with tf.python_io.TFRecordWriter(filename) as writer:
         image_to_string = images[i].tostring()
         # 这个字典中key是要保存的名字，value必须是rf.train.Feature的格式。
         feature = {
-            "pixels": out.int64_feature(pixels),
-            "label": out.int64_feature(np.argmax(labels[i])),
-            "image_raw": out.bytes_feature(image_to_string)
+            "pixels": out.int64_feature([pixels]),
+            "label": out.int64_feature([np.argmax(labels[i])]),
+            "image_raw": out.bytes_feature([image_to_string])
         }
 
         writer.write(out.tf_example(feature))

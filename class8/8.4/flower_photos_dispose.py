@@ -129,6 +129,7 @@ def create_bottleneck(sess, image_lists, flower_category, image_index,
         # 将当前图片输入到InceptionV3模型，并计算瓶颈张量的值，所得瓶颈张量的值
         # 就是这张图片的特征向量，但是得到的特征向量是四维的，所以还需要通过squeeze()
         # 函数压缩成一维的，以方便作为全连层的输入
+        # np.squeeze将多维矩阵中维度为1的维度去除
         bottleneck_values = sess.run(bottleneck_tensor, feed_dict={jpeg_data_tensor: image_data})
         bottleneck_values = np.squeeze(bottleneck_values)
 
@@ -179,34 +180,32 @@ def get_random_bottlenecks(sess, num_classes, image_lists, batch_size, data_cate
     return bottlenecks, labels
 
 
-
 def get_test_bottlenecks(sess, image_lists, num_classes, jpeg_data_tensor, bottleneck_tensor):
     bottlenecks = []
     labels = []
 
-    #flower_category_list是image_lists中键的列表，打印出来就是这样：
-    #['roses', 'sunflowers', 'daisy', 'dandelion', 'tulips']
+    # flower_category_list是image_lists中键的列表，打印出来就是这样：
+    # ['roses', 'sunflowers', 'daisy', 'dandelion', 'tulips']
     flower_category_list = list(image_lists.keys())
 
     data_category = "testing"
 
-    #枚举所有的类别和每个类别中的测试图片
-    #在外层的for循环中，label_index是flower_category_list列表中的元素下标
-    #flower_category就是该列表中的值
+    # 枚举所有的类别和每个类别中的测试图片
+    # 在外层的for循环中，label_index是flower_category_list列表中的元素下标
+    # flower_category就是该列表中的值
     for label_index, flower_category in enumerate(flower_category_list):
 
-        #在内层的for循环中，通过flower_category和"testing"枚举image_lists中每一类花中
-        #用于测试的花名，得到的名字就是unused_base_name，但我们只需要image_index
+        # 在内层的for循环中，通过flower_category和"testing"枚举image_lists中每一类花中
+        # 用于测试的花名，得到的名字就是unused_base_name，但我们只需要image_index
         for image_index, unused_base_name in enumerate(image_lists[flower_category]
-                                                                        ["testing"]):
-
-            #调用create_bottleneck()函数创建特征向量，因为在进行训练或验证的过程中
-            #用于测试的图片并没有生成相应的特征向量，所以这里要一次性全部生成
+                                                       ["testing"]):
+            # 调用create_bottleneck()函数创建特征向量，因为在进行训练或验证的过程中
+            # 用于测试的图片并没有生成相应的特征向量，所以这里要一次性全部生成
             bottleneck = create_bottleneck(sess, image_lists, flower_category,
-                                                    image_index,data_category,
-                                          jpeg_data_tensor, bottleneck_tensor)
+                                           image_index, data_category,
+                                           jpeg_data_tensor, bottleneck_tensor)
 
-            #接下来就和get_random_bottlenecks()函数相同了
+            # 接下来就和get_random_bottlenecks()函数相同了
             label = np.zeros(num_classes, dtype=np.float32)
             label[label_index] = 1.0
             labels.append(label)
