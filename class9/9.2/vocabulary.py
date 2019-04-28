@@ -22,6 +22,8 @@ def read_data(file):
 original_words = read_data(file)
 # len()函数是Python中的内容，用于测试列表中元素的数量
 print("len of original word is", len(original_words))
+
+
 # 输出len of original words is 17005207
 
 
@@ -85,6 +87,8 @@ def build_vocabulary(original_words):
 
 data_index = 0
 data, count, dictionary, reverse_dictionary = build_vocabulary(original_words)
+
+
 def generate_batch(batch_size, num_of_samples, skip_distance):
     # 单词序号data_index定义为global变量，global是Python中的命名空间声明
     # 因为之后会多次调用data_index，并在函数内对其进行修改
@@ -96,18 +100,17 @@ def generate_batch(batch_size, num_of_samples, skip_distance):
 
     num_of_sample_words = 2 * skip_distance + 1
 
-    #创建buffer队列，长度为num_of_sample_words，因为generate_batch()函数
-    #会被调用多次，所以这里使用buffer队列暂存来自data的编号
+    # 创建buffer队列，长度为num_of_sample_words，因为generate_batch()函数
+    # 会被调用多次，所以这里使用buffer队列暂存来自data的编号
     buffer = collections.deque(maxlen=num_of_sample_words)
     for _ in range(num_of_sample_words):
         buffer.append(data[data_index])
         data_index = (data_index + 1)
 
-
     # Python中//运算符会对商结果取整
     for i in range(batch_size // num_of_samples):
-        #target=1，它在一个三元素列表中位于中间的位置，所以下标为skip_distance值
-        #targets_to_avoid是生成样本时需要避免的单词列表
+        # target=1，它在一个三元素列表中位于中间的位置，所以下标为skip_distance值
+        # targets_to_avoid是生成样本时需要避免的单词列表
         target = skip_distance
         targets_to_avoid = [skip_distance]
 
@@ -131,6 +134,8 @@ def generate_batch(batch_size, num_of_samples, skip_distance):
         buffer.append(data[data_index])
         data_index = (data_index + 1)
     return batch, labels
+
+
 '''
 batch, labels = generate_batch(batch_size=8, num_of_samples=2, skip_distance=1)
 for i in range(8):

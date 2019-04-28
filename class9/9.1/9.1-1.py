@@ -26,11 +26,3 @@ for i in range(len(x)):
     # 打印t1和t2时刻的状态和输出信息
     print("t%s state: %s" % (i + 1, state))
     print("t%s output: %s\n" % (i + 1, final_output))
-
-'''打印的信息如下；
-t1 state: [0.86678393 0.44624361]
-t1 output: [0.75651377]
-
-t2 state: [0.64443809 0.5303174 ]
-t2 output: [0.68737775]
-'''

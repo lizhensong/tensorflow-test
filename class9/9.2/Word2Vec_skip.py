@@ -123,10 +123,10 @@ with tf.Graph().as_default():
                         # 在8个循环内通过reverse_dictionary得到与验证单词相近的8个单词的原型
                         # 并改进需要打印的字符串
                         close_word = vocabulary.reverse_dictionary[nearest[j]]
-                        nearest_information = " %s %s" % (nearest_information,close_word)
+                        nearest_information = " %s %s" % (nearest_information, close_word)
 
                     # 打印出验证单词及与验证单词相近的8个单词
-                    print("valid_word is: %s"% valid_word)
+                    print("valid_word is: %s" % valid_word)
                     print(nearest_information)
 
         final_embeddings = normalized_embeddings.eval()
